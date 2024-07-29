@@ -311,7 +311,7 @@ def train():
     )
     config.use_cache = False
 
-    model = AutoAWQForCausalLM.from_quantized(
+    model = AutoAWQForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         config=config,
         cache_dir=training_args.cache_dir,
