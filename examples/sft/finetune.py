@@ -311,7 +311,7 @@ def train():
     )
     config.use_cache = False
 
-    model = AutoModelForCausalLM.from_pretrained(
+    model = AutoAWQForCausalLM.from_quantized(
         model_args.model_name_or_path,
         config=config,
         cache_dir=training_args.cache_dir,
@@ -325,6 +325,9 @@ def train():
         if training_args.use_lora and lora_args.q_lora
         else None,
         **model_load_kwargs,
+        fuze_layers=True,
+        **{"low_cpu_mem_usage": True,
+           "offload_buffers": True}
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
