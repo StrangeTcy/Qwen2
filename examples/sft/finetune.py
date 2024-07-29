@@ -1,4 +1,5 @@
-# This code is based on the revised code from fastchat based on tatsu-lab/stanford_alpaca.
+# This code is based on the revised code from fastchat
+# based on tatsu-lab/stanford_alpaca.
 
 
 import json
@@ -10,6 +11,9 @@ from typing import Dict, List, Optional
 
 import torch
 import transformers
+
+from awq import AutoAWQForCausalLM
+
 from accelerate.utils import DistributedType
 from deepspeed import zero
 from deepspeed.runtime.zero.partition_parameters import ZeroParamStatus
@@ -39,7 +43,7 @@ def rank0_print(*args):
 
 @dataclass
 class ModelArguments:
-    model_name_or_path: Optional[str] = field(default="Qwen/Qwen2-7B")
+    model_name_or_path: Optional[str] = field(default="Qwen/Qwen2-7B-Instruct-AWQ")
 
 
 @dataclass
@@ -58,7 +62,7 @@ class TrainingArguments(transformers.TrainingArguments):
     cache_dir: Optional[str] = field(default=None)
     optim: str = field(default="adamw_torch")
     model_max_length: int = field(
-        default=8192,
+        default=8192*8,
         metadata={
             "help": "Maximum sequence length. Sequences will be right padded (and possibly truncated)."
         },
@@ -359,7 +363,10 @@ def train():
 
     # Start trainer
     trainer = Trainer(
-        model=model, tokenizer=tokenizer, args=training_args, **data_module
+        model=model, 
+        tokenizer=tokenizer, 
+        args=training_args, 
+        **data_module
     )
 
     # `not training_args.use_lora` is a temporary workaround for the issue that there are problems with
