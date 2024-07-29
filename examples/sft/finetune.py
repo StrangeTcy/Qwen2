@@ -326,8 +326,7 @@ def train():
         else None,
         **model_load_kwargs,
         fuze_layers=True,
-        **{"low_cpu_mem_usage": True,
-           "offload_buffers": True}
+        **{"offload_buffers": True}
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
